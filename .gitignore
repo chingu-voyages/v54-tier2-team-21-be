@@ -1,0 +1,49 @@
+# Python  
+__pycache__/  
+*.py[cod]  
+*.swp  
+*.swo  
+*.log  
+
+# Virtual Environment  
+venv/  
+env/
+.env  
+.venv/  
+Pipfile  
+Pipfile.lock  
+
+# Django  
+/db.sqlite3  
+/media/  
+/staticfiles/  
+celerybeat-schedule  
+**/migrations/*.py  
+!**/migrations/__init__.py  
+
+# PostgreSQL
+*.pgsql  
+*.pg_dump  
+pgdata/  
+
+# Docker  
+docker-compose.override.yml  
+.dockerignore  
+**/volumes/  
+
+# Logs & Debugging  
+logs/  
+*.log  
+*.out  
+*.pid  
+*.seed  
+.history
+
+# VSCode & JetBrains IDEs  
+.vscode/  
+.idea/  
+
+# System Files  
+.DS_Store  
+Thumbs.db  
+*.orig  
