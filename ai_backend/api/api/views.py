@@ -16,8 +16,10 @@ class SendPromptCreateView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         prompt_instance = serializer.save()
 
-        # api_url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}'
-        api_url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={API_KEY}'
+        model = prompt_instance.model
+
+        # api_url = f'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={API_KEY}'
+        api_url = f'https://generativelanguage.googleapis.com/v1/models/{model}:generateContent?key={API_KEY}'
         payload = {
             "contents": [
                 {
@@ -46,7 +48,7 @@ class SendPromptCreateView(generics.CreateAPIView):
         return Response({
             "api_response_text": response_text,
             "api_response": data
-        }, status=status.HTTP_201_CREATED)
+        }, status=status.HTTP_200_OK)
     
 
 class GetPromptListView(generics.ListAPIView):
