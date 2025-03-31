@@ -4,6 +4,7 @@ from ..models import Prompt
 from .serializers import PromptSerializer
 import os
 import requests
+from rest_framework.permissions import IsAuthenticated
 
 API_KEY = os.getenv('API_KEY')
 
@@ -52,6 +53,7 @@ class SendPromptCreateView(generics.CreateAPIView):
     
 
 class GetPromptListView(generics.ListAPIView):
+    # permission_classes = [IsAuthenticated]
     serializer_class = PromptSerializer
     queryset = Prompt.objects.all()
     
