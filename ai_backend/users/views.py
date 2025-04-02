@@ -6,6 +6,7 @@ from rest_framework.viewsets import generics
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import ValidationError
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from .serializers import UserSerializer, LoginSerializer, TokenObtainPairSerializer
 
@@ -15,8 +16,13 @@ class RegisterCreateAPIView(generics.CreateAPIView):
     def create(self, *args, **kwargs):
         serializer = self.get_serializer(data=self.request.data)
         if serializer.is_valid():
-            get_user_model().objects.create_user(**serializer.validated_data)
-            return Response(status=HTTP_201_CREATED)
+            user = get_user_model().objects.create_user(**serializer.validated_data)
+            refresh = RefreshToken.for_user(user)
+            access = AccessToken.for_user(user)
+            return Response({
+                'access_token': str(access),
+                'refresh_token': str(refresh)
+            }, status=HTTP_201_CREATED)
         return Response(status=HTTP_400_BAD_REQUEST, data={'errors': serializer.errors})
     
 
@@ -29,8 +35,11 @@ class LoginCreateAPIView(generics.CreateAPIView):
             user = serializer.validated_data.get('user')
             if not user:
                 raise AuthenticationFailed("Invalid credentials")
+            refresh = RefreshToken.for_user(user)
+            access = AccessToken.for_user(user)
             return Response({
-                "Succesfully logged in!"
+                'access_token': str(access),
+                'refresh_token': str(refresh)
             }, status=HTTP_201_CREATED)
         except ValidationError as e: 
             return Response({"errors": e.detail}, status=HTTP_400_BAD_REQUEST)
