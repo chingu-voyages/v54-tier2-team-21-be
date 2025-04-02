@@ -9,6 +9,8 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The Email must be set!')
         
         email = self.normalize_email(email)
+
+        extra_fields.pop('password2', None)
         
         user = self.model(email=email, **extra_fields)
     
