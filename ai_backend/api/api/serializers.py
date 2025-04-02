@@ -6,7 +6,7 @@ class PromptSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()
     class Meta:
         model = Prompt
-        fields = ["email", "prompt_text", "model", "created_at", "prompt_response"]
+        fields = ["user", "email", "prompt_text", "model", "created_at", "prompt_response"]
 
     def get_email(self, obj):
         return obj.user.email if obj.user else None

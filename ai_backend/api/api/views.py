@@ -57,4 +57,13 @@ class GetPromptListView(generics.ListAPIView):
     # permission_classes = [IsAuthenticated]
     serializer_class = PromptSerializer
     queryset = Prompt.objects.all()
-    
+
+
+class GetPromptForUserListView(generics.ListAPIView):
+    serializer_class = PromptSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('id')
+        prompts = Prompt.objects.filter(user_id=user_id)
+
+        return prompts
