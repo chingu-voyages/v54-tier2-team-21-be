@@ -5,6 +5,7 @@ from .serializers import PromptSerializer
 import os
 import requests
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import AnonymousUser
 
 API_KEY = os.getenv('API_KEY')
 
@@ -15,7 +16,7 @@ class SendPromptCreateView(generics.CreateAPIView):
         print(f"API_KEY: {API_KEY}")
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        prompt_instance = serializer.save()
+        prompt_instance = serializer.save(user=request.user if request.user and not isinstance(request.user, AnonymousUser) else None)
 
         model = prompt_instance.model
 
