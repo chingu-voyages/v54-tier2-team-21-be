@@ -13,7 +13,6 @@ class SendPromptCreateView(generics.CreateAPIView):
     serializer_class = PromptSerializer
 
     def create(self, request, *args, **kwargs):
-        print(f"API_KEY: {API_KEY}")
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         prompt_instance = serializer.save(user=request.user if request.user and not isinstance(request.user, AnonymousUser) else None)
@@ -61,9 +60,7 @@ class GetPromptListView(generics.ListAPIView):
 
 class GetPromptForUserListView(generics.ListAPIView):
     serializer_class = PromptSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user_id = self.kwargs.get('id')
-        prompts = Prompt.objects.filter(user_id=user_id)
-
-        return prompts
+        return Prompt.objects.filter(user=self.request.user)

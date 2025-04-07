@@ -4,5 +4,5 @@ from .views import SendPromptCreateView, GetPromptListView, GetPromptForUserList
 urlpatterns = [
     path('send_prompt/', SendPromptCreateView.as_view(), name="send_prompt"),
     path('prompts/', GetPromptListView.as_view(), name="all_prompts"),
-    path('prompts/<int:id>/', GetPromptForUserListView.as_view(), name="prompts_for_user"),
+    path('prompts/me/', GetPromptForUserListView.as_view(), name="prompts_for_user"),
 ]
