@@ -53,7 +53,7 @@ class SendPromptCreateView(generics.CreateAPIView):
     
 
 class GetPromptListView(generics.ListAPIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     serializer_class = PromptSerializer
     queryset = Prompt.objects.all()
 
