@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
+import uuid
 
 class Prompt(models.Model):
 
@@ -11,6 +12,7 @@ class Prompt(models.Model):
 
     User = get_user_model()
 
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     role = models.CharField(max_length=50)
     prompt_text = models.TextField()

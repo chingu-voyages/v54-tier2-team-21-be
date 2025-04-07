@@ -6,6 +6,9 @@ import os
 import requests
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import AnonymousUser
+from django.shortcuts import get_object_or_404
+from ..utils.export import generate_csv, generate_pdf
+from django.http import HttpResponse
 
 API_KEY = os.getenv('API_KEY')
 
@@ -42,11 +45,14 @@ class SendPromptCreateView(generics.CreateAPIView):
 
         response_text = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "No response text")
 
+        public_id = prompt_instance.public_id
+
         prompt_instance.prompt_response = response_text
         prompt_instance.save()
 
 
         return Response({
+            "public_id": public_id,
             "api_response_text": response_text,
             "api_response": data
         }, status=status.HTTP_200_OK)
@@ -64,3 +70,19 @@ class GetPromptForUserListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Prompt.objects.filter(user=self.request.user)
+
+    
+def export_prompt(request, public_id, format):
+    prompt = get_object_or_404(Prompt, public_id=public_id)
+
+    if format == 'csv':
+        csv_data = generate_csv(prompt=prompt)
+        response = HttpResponse(csv_data, content_type="text/csv")
+        response['Content-Disposition'] = f'attachment; filename="prompt_{public_id}.csv"'
+        return response
+    
+    if format == "pdf":
+        pdf_data = generate_pdf(prompt=prompt)
+        response = HttpResponse(pdf_data, content_type="application/pdf")
+        response['Content-Disposition'] = f'attachment; filename="prompt_{public_id}.pdf"'
+        return response
