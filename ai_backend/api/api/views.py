@@ -4,7 +4,7 @@ from ..models import Prompt
 from .serializers import PromptSerializer
 import os
 import requests
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import get_object_or_404
 from ..utils.export import generate_csv, generate_pdf
@@ -59,7 +59,7 @@ class SendPromptCreateView(generics.CreateAPIView):
     
 
 class GetPromptListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
     serializer_class = PromptSerializer
     queryset = Prompt.objects.all()
 
