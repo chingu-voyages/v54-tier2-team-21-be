@@ -8,18 +8,12 @@ class TokenObtainPairSerializer(JwtTokenOb):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(write_only=True)
     class Meta:
         model = get_user_model()
-        fields = ['email', 'password', 'password2']
+        fields = ['email', 'password',]
         extra_kwargs = {
             'password': {'write_only': True}
         }
-
-    def validate(self, data):
-        if data['password'] != data['password2']:
-            raise serializers.ValidationError({"password2": "Password must match!"})
-        return data
     
     def create(self, validated_data):
         password = validated_data.pop('password')
