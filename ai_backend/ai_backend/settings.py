@@ -107,7 +107,13 @@ AUTHENTICATION_BACKENDS = (('users.auth_backends.EmailBackend'),)
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '5/minute',
+    },
 }
 
 CORS_ALLOW_ALL_ORIGINS = True

@@ -9,6 +9,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import get_object_or_404
 from ..utils.export import generate_csv, generate_pdf, send_email
 from django.http import HttpResponse
+from rest_framework.throttling import UserRateThrottle
 
 API_KEY = os.getenv('API_KEY')
 
@@ -74,6 +75,7 @@ class GetPromptForUserListView(generics.ListAPIView):
     
 class SendEmailCreateView(generics.CreateAPIView):
     serializer_class = EmailSerializer
+    throttle_classes = [UserRateThrottle]
 
     def post(self, request, public_id):
         serializer = self.get_serializer(data=request.data)
