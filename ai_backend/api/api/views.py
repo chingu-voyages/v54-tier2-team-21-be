@@ -1,13 +1,13 @@
 from rest_framework.response import Response
 from rest_framework import status, generics
 from ..models import Prompt
-from .serializers import PromptSerializer
+from .serializers import PromptSerializer, EmailSerializer
 import os
 import requests
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import get_object_or_404
-from ..utils.export import generate_csv, generate_pdf
+from ..utils.export import generate_csv, generate_pdf, send_email
 from django.http import HttpResponse
 
 API_KEY = os.getenv('API_KEY')
@@ -70,8 +70,30 @@ class GetPromptForUserListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Prompt.objects.filter(user=self.request.user)
-
     
+    
+class SendEmailCreateView(generics.CreateAPIView):
+    serializer_class = EmailSerializer
+
+    def post(self, request, public_id):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        prompt = get_object_or_404(Prompt, public_id=public_id)
+        prompt_data = PromptSerializer(prompt).data
+
+        prompt_text = prompt_data['prompt_text']
+        prompt_response = prompt_data['prompt_response']
+        send_email(email, prompt_text, prompt_response)
+
+        return Response({
+            "msg": "Email was sent successfully!",
+            "email": email,
+        }, status=status.HTTP_200_OK)
+
+
+
 def export_prompt(request, public_id, format):
     prompt = get_object_or_404(Prompt, public_id=public_id)
 

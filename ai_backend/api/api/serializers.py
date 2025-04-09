@@ -11,3 +11,5 @@ class PromptSerializer(serializers.ModelSerializer):
     def get_email(self, obj):
         return obj.user.email if obj.user else None
 
+class EmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
