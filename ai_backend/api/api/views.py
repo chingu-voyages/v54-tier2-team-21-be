@@ -1,7 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status, generics
+from rest_framework.views import APIView
 from ..models import Prompt
-from .serializers import PromptSerializer, EmailSerializer
+from .serializers import PromptSerializer
 import os
 import requests
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -73,25 +74,21 @@ class GetPromptForUserListView(generics.ListAPIView):
         return Prompt.objects.filter(user=self.request.user)
     
     
-class SendEmailCreateView(generics.CreateAPIView):
-    serializer_class = EmailSerializer
+class SendEmailCreateView(APIView):
+    permission_classes = [IsAuthenticated]
     throttle_classes = [UserRateThrottle]
 
     def post(self, request, public_id):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        email = serializer.validated_data['email']
         prompt = get_object_or_404(Prompt, public_id=public_id)
         prompt_data = PromptSerializer(prompt).data
 
         prompt_text = prompt_data['prompt_text']
         prompt_response = prompt_data['prompt_response']
-        send_email(email, prompt_text, prompt_response)
+        send_email(request.user.email, prompt_text, prompt_response)
 
         return Response({
             "msg": "Email was sent successfully!",
-            "email": email,
+            "email": request.user.email,
         }, status=status.HTTP_200_OK)
 
 
